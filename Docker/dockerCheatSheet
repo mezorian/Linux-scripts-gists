@@ -1,0 +1,67 @@
+# Show all docker images
+docker image ls
+docker images
+
+# Show all running docker containers
+docker container ls
+docker ps
+
+# Explore already-existing docker images
+https://hub.docker.com/search?q=&type=image
+
+# Download an existing docker image
+docker pull ubuntu:20.04
+
+# (Download and) run and docker image -> create a container
+docker run -it ubuntu:20.04
+
+# run docker image permanently in the background (run a never-ending background command)
+docker run -d ubuntu:20.04 tail -f /dev/null
+
+# run docker image with a specific name
+docker run --name ubuntuTest -d ubuntu:20.04 tail -f /dev/null
+
+# stop running container (stopped container will be stored in background)
+docker stop ubuntuTest
+
+# start stopped container again
+docker start ubuntuTest
+
+# stop and remove running container
+docker rm -f ubuntuTest
+
+# delete stopped containers and dangling images
+docker system prune
+
+# login into the running container
+docker exec -it ubuntuTest bash
+
+# show logs inside container
+docker run -d --name influxdb influxdb
+docker logs influxdb
+
+# copy files into / from of the container from / into the host
+docker cp influxdb:/etc/influxdb/influxdb.conf .
+docker cp /etc/docker/daemon.json influxdb:/tmp/
+
+# inspect running containers / images
+docker inspect influxdb
+docker container inspect influxdb
+docker inspect influxdb:latest
+docker image inspect infludb:latest
+
+# mount file / directory to a container
+docker run -v /home:/tmp/ -d --name influxdb influxdb
+
+# expose port of container to host's port
+# / do a port-forwarding from the containers port to the host's port
+docker run -p 3000:3000 -d --name influxdb influxdb
+
+# build docker image
+docker build .
+
+# build docker image with parameters
+docker build --build-arg name="anon" .
+
+# build docker image and tag it with a name and version
+docker build -t myimage:0.1.0 .
