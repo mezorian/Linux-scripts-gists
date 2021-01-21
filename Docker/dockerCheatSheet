@@ -65,3 +65,9 @@ docker build --build-arg name="anon" .
 
 # build docker image and tag it with a name and version
 docker build -t myimage:0.1.0 .
+
+# build docker image without docker cache --> clean build
+docker build --no-cache .
+
+# build docker image and specify a path to the dockerfile 
+docker build --file XYZ.Dockerfile
