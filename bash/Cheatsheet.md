@@ -16,6 +16,12 @@ fc
 sudo !!
 ```
 
+# text search 
+## get the everything that not matches your grep command 
+```bash
+grep --invert 'foo.*bar'
+```
+
 # apt 
 
 ## download deb files with dependencies
@@ -31,3 +37,14 @@ cd -
 
 # rsync (don't backup files from /proc /media /....
 rsync --one-file-system (https://unix.stackexchange.com/a/107230)
+
+# console output
+## table formatted output 
+use `foo | column -t` to format your space separated output like a table
+Example:
+```
+sudo apt list --installed | column -t
+```
+
+
+
