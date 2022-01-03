@@ -22,6 +22,8 @@ signal-cli 0.10.0
 
 ## Register for a new account 
 **Request registration for mobile number**
+`YOUR_NUMBER` has the format of `+491234567890`
+
 ```
 signal-cli -u YOUR_NUMBER register
 ```
@@ -82,3 +84,68 @@ Copy the uuid string and paste it in the below command
 ```
 signal-cli -u YOUR_NUMBER addDevice --uri "tsdevice:/?uuid=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ```
+
+## Change user profile information
+
+```
+# add profile picture
+signal-cli -u YOUR_NUMBER updateProfile --avatar /tmp/avatar.png
+
+# remove profile picture
+signal-cli -u YOUR_NUMBER updateProfile --remove-avatar
+
+# profile first name
+signal-cli -u YOUR_NUMBER updateProfile --name anon
+
+# profile second name
+signal-cli -u YOUR_NUMBER updateProfile --family-name "anon-family"
+
+# profile about text
+signal-cli -u YOUR_NUMBER updateProfile --about "hello-world"
+```
+
+## Add contacts 
+The signal desktop app does not provide the possibility to add contacts. 
+If you want to add a contact either 
+
+**A.** : Ask your new contact (which has a smartphone app) to add you as a new contact. Afterwards you can accept this in your desktop app. 
+
+**B.** : use the sendCommands cli command. For this follow the below steps:
+
+
+1. Open your local config at `~/.local/share/signal-cli/data/YOUR_NUMBER`
+2. Add your new contacts in the following format to the config file
+	```
+	"contactStore" : {
+		"contacts" : [ 
+			{
+				"name" : "Harry Potter",
+				"number" : "+491234567890"
+			}, {
+				"name" : "Ron Weasly",
+				"number" : "+490987654321"
+			}, {
+				"name" : "Hermine Granger",
+				"number" : "+491122334455"
+			}
+		]
+	}
+	```
+
+	Before adding the contacts it might look somehow like this:
+	![link broken](images/signal_data_file_before.png)
+
+	After adding the contacts it should look somehow like this:
+	![link broken](images/signal_data_file_after.png)
+
+3. Syncronize contacts of your local configs with all other devices with 
+   ```
+   signal-cli -u YOUR_NUMBER sendContacts
+   ```
+   
+   Running this command will 
+    - read the new contacts from the config at `~/.local/share/signal-cli/data/YOUR_NUMBER`, 
+    - validate them (checks if they are existing at Signal), 
+    - write them to your local contact store at `~/.local/share/signal-cli/data/YOUR_NUMBER.d/recipients-store`,
+    - remove the new contacts from the config at `~/.local/share/signal-cli/data/YOUR_NUMBER`
+4. Check if new contacts are existing in you desktop app and your local recipient store
