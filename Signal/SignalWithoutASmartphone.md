@@ -1,7 +1,7 @@
 # How to use Signal without a Smartphone
 
 The Signal messenger is an end-to-end encrypted messenger which can be used on mobile apps for android and ios and also in desktop apps for Linux, Mac and Windows. 
-Unfortunately Signal is very focused on Smartphones and some Features like registration, adding contacts and change profile properties are limited to the mobile apps and don't work with the desktop applications. 
+Unfortunately Signal is very focused on Smartphones and some features like registration, adding contacts and changing profile properties are limited to the mobile apps and don't work with the desktop applications. 
 If you want to use Signal even though you have no smartphone you have to find a way to still do these things that are not possible in the desktop apps. 
 One way would be to install a virtual android somewhere and do things like registration in your virtual android app. 
 Unfortunately this also has a lot of pitfalls. For example it is not so easy to let your virtual android app use your computers camera to verify QR codes. 
@@ -12,72 +12,45 @@ This dbus based cli can interact with the Signal servers to perform features lik
 
 ## Installation of Signal Commandline Interface 
 
-Download from https://github.com/AsamK/signal-cli/releases/latest
+To install the Signal-cli we can either download it directly from the releases published on Github or use the AUR package 
+ - https://aur.archlinux.org/packages/signal-cli/
+
+to install it directly on arch linux based systems. 
+
+If you want to download it from Github directly please go to 
+ - https://github.com/AsamK/signal-cli/releases/latest
+
+check for the latest release and replace this in the below commands.
 
 ### Installation
 ``` 
+# download everything
 wget https://github.com/AsamK/signal-cli/releases/download/v0.10.0/signal-cli-0.10.0.tar.gz
+
+# unpack it to /usr/local/bin
 sudo tar -xvzf signal-cli-0.10.0.tar.gz --directory=/usr/local/bin/
+
+# linkf from /usr/local/bin to /usr/bin
 sudo ln -s /usr/local/bin/signal-cli-0.10.0/bin/signal-cli /usr/bin/signal-cli
 ```
 
 ### Check Installation
+After a successful installation the package should be available from every directory in your system. 
+You can test this by running
 ```
 signal-cli -v
 ```
-should print
+which should print your version number
 ```
 signal-cli 0.10.0
 ```
 
-### Register signal-cli as a systemd service
-The Signal protocol expects that incoming messages are regularly received. If this is not the case the key material of the signal-cli might get out of sync and signal will deactivate this client after some time. To prevent this it makes sense to either regularly receive messages with the signal-cli account manually OR to run the signal-cli in the background as a systemd service. To do this follow the below steps:
-
-1. Install `libunixsocket-java` for debian based systems or `libmatthew-unix-java` for arch linux based systems
-2. Add the following service file to `/etc/systemd/system/signal-cli.service`
-   ```
-   [Unit]
-   Description=Signal cli
-   Requires=dbus.socket
-   After=dbus.socket
-   Wants=network-online.target
-   After=network-online.target
-
-   [Service]
-   Type=simple
-   Environment="SIGNAL_CLI_OPTS=-Xms2m"
-   Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
-   User=anon
-   ExecStart=/usr/bin/signal-cli -u YOUR_NUMBER --config /home/anon/.local/share/signal-cli daemon --ignore-attachments
-   BusName=org.asamk.Signal
-
-   [Install]
-   WantedBy=multi-user.target
-   ```
-3. Replace `YOUR_NUMBER` with your mobile phone number 
-4. Replace `user=anon` with the user you want to run the service with
-5. Replace the config path with a path that points to your `.local/share` directory of your user
-6. Check with `systemctl --user status dbus.socket` if you have a different dubs address than `unix:path=/run/user/1000/bus` and replace this if necessary
-7. Ensure you have the current version of your service file loaded with:
-   ```
-   sudo systemctl daemon-reload
-   ```   
-9. Start the service with 
-   ```
-   sudo systemctl start signal-cli
-   ```
-8. Check if the service is running with 
-   ```
-   sudo systemctl status signal-cli
-   ```
-   and 
-   ```
-   journalctl -xeu signal-cli.service
-   ```
-
 ## Register for a new account 
-**Request registration for mobile number**
-`YOUR_NUMBER` has the format of `+491234567890`
+At very first you need to create a new account. For this you will need a phone number. 
+As this phone number will be used as your 'user id' which makes it possible for your contacts to find you, please think twice about using public proxy numbers.
+
+To request a registration fory our mobile number you can use the below command.
+Please don't forget to replace `YOUR_NUMBER` with your phone number in the format of `+491234567890`
 
 ```
 signal-cli -u YOUR_NUMBER register
@@ -89,8 +62,17 @@ signal-cli -u YOUR_NUMBER verify VERIFICATIONCODE
 ```
 
 It might be that the register step requires you to solve a captcha. 
-In this case you will be prompted to got open a link in the browser, solve the captcha, copy the result of the captcha from the failed redirect message in the browsers development console. (To the time this how-to was written the link was `https://signalcaptchas.org/staging/challenge/generate.html` )
+In this case you will be prompted to open a link in the browser, solve the captcha, copy the result of the captcha from the failed redirect message in the browsers development console. 
+
+(At the time this how-to was created this link was `https://signalcaptchas.org/staging/challenge/generate.html` )
+
 Once the captcha is solved you can copy the result string and repeat the register command with the --captcha option
+
+![link broken](captcha.png)
+
+![link broken](captcha2.png)
+
+
 ```
 signal-cli -u YOUR_NUMBER register --captcha CAPTCHA_STRING
 signal-cli -u YOUR_NUMBER verify VERIFICATIONCODE
@@ -228,10 +210,56 @@ java.io.IOException: +491234567890
 	at org.asamk.signal.Main.main(Main.java:53)
 ```
 
-This is because signal is not able to find any user with the number `+491234567890`
+This is because signal is not able to find any user with the number `+491234567890`.
+
 Unfortunately until now the signal-cli is not able to recover from this problem on its own. 
-This is due to the fact that the cli still added a new entry to the receipient store. But as it is not able to get any uuid for this not known number it added a new entry with uuid `null` to the receipient store. And once there is such a entry inside the reciepient store the cli refuses to add more contacts. 
+This is due to the fact that the cli still added a new entry to the recipient store. But as it is not able to get any uuid for this not known number it added a new entry with uuid `null` to the recipient store. And once there is such an entry inside the recipient store, the cli refuses to add more contacts. 
 
 To fix this you can simply manually edit the recipient store at `~/.local/share/signal-cli/data/YOUR_NUMBER.d/recipients-store` and remove the mal-formed entry :
 
 ![link broken](corrupted_recipients_store.png)
+
+## Register signal-cli as a systemd service
+The Signal protocol expects that incoming messages are regularly received. If this is not the case the key material of the signal-cli might get out of sync and signal will deactivate this client after some time. To prevent this it makes sense to either regularly receive messages with the signal-cli account manually OR to run the signal-cli in the background as a systemd service. To do this follow the below steps:
+
+1. Install `libunixsocket-java` for debian based systems or `libmatthew-unix-java` for arch linux based systems
+2. Add the following service file to `/etc/systemd/system/signal-cli.service`
+   ```
+   [Unit]
+   Description=Signal cli
+   Requires=dbus.socket
+   After=dbus.socket
+   Wants=network-online.target
+   After=network-online.target
+
+   [Service]
+   Type=simple
+   Environment="SIGNAL_CLI_OPTS=-Xms2m"
+   Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
+   User=anon
+   ExecStart=/usr/bin/signal-cli -u YOUR_NUMBER --config /home/anon/.local/share/signal-cli daemon --ignore-attachments
+   BusName=org.asamk.Signal
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+3. Replace `YOUR_NUMBER` with your mobile phone number 
+4. Replace `user=anon` with the user you want to run the service with
+5. Replace the config path with a path that points to your `.local/share` directory of your user
+6. Check with `systemctl --user status dbus.socket` if you have a different dbus address than `unix:path=/run/user/1000/bus` and replace this if necessary
+7. Ensure you have the current version of your service file loaded with:
+   ```
+   sudo systemctl daemon-reload
+   ```   
+9. Start the service with 
+   ```
+   sudo systemctl start signal-cli
+   ```
+8. Check if the service is running with 
+   ```
+   sudo systemctl status signal-cli
+   ```
+   and 
+   ```
+   journalctl -xeu signal-cli.service
+   ```
