@@ -46,5 +46,7 @@ Example:
 sudo apt list --installed | column -t
 ```
 
-
+# QR Codes 
+# Scan QR code from command line:
+zbarimg /tmp/qr.png
 
