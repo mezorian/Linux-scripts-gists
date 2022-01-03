@@ -223,4 +223,5 @@ Unfortunately until now the signal-cli is not able to recover from this problem 
 This is due to the fact that the cli still added a new entry to the receipient store. But as it is not able to get any uuid for this not known number it added a new entry with uuid `null` to the receipient store. And once there is such a entry inside the reciepient store the cli refuses to add more contacts. 
 
 To fix this you can simply manually edit the recipient store at `~/.local/share/signal-cli/data/YOUR_NUMBER.d/recipients-store` and remove the mal-formed entry :
+
 ![link broken](corrupted_recipients_store.png)
