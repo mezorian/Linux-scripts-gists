@@ -4,14 +4,14 @@
 
 Download from https://github.com/AsamK/signal-cli/releases/latest
 
-**Installation**
+### Installation
 ``` 
 wget https://github.com/AsamK/signal-cli/releases/download/v0.10.0/signal-cli-0.10.0.tar.gz
 sudo tar -xvzf signal-cli-0.10.0.tar.gz --directory=/usr/local/bin/
 sudo ln -s /usr/local/bin/signal-cli-0.10.0/bin/signal-cli /usr/bin/signal-cli
 ```
 
-**Check Installation**
+### Check Installation
 ```
 signal-cli -v
 ```
@@ -19,6 +19,51 @@ should print
 ```
 signal-cli 0.10.0
 ```
+
+### Register signal-cli as a systemd service
+The Signal protocol expects that incoming messages are regularly received. If this is not the case the key material of the signal-cli might get out of sync and signal will deactivate this client after some time. To prevent this it makes sense to either regularly receive messages with the signal-cli account manually OR to run the signal-cli in the background as a systemd service. To do this follow the below steps:
+
+1. Install `libunixsocket-java` for debian based systems or `libmatthew-unix-java` for arch linux based systems
+2. Add the following service file to `/etc/systemd/system/signal-cli.service`
+   ```
+   [Unit]
+   Description=Signal cli
+   Requires=dbus.socket
+   After=dbus.socket
+   Wants=network-online.target
+   After=network-online.target
+
+   [Service]
+   Type=simple
+   Environment="SIGNAL_CLI_OPTS=-Xms2m"
+   Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
+   User=anon
+   ExecStart=/usr/bin/signal-cli -u YOUR_NUMBER --config /home/anon/.local/share/signal-cli daemon --ignore-attachments
+   BusName=org.asamk.Signal
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+3. Replace `YOUR_NUMBER` with your mobile phone number 
+4. Replace `user=anon` with the user you want to run the service with
+5. Replace the config path with a path that points to your `.local/share` directory of your user
+6. Check with `systemctl --user status dbus.socket` if you have a different dubs address than `unix:path=/run/user/1000/bus` and replace this if necessary
+7. Ensure you have the current version of your service file loaded with:
+   ```
+   sudo systemctl daemon-reload
+   ```   
+9. Start the service with 
+   ```
+   sudo systemctl start signal-cli
+   ```
+8. Check if the service is running with 
+   ```
+   sudo systemctl status signal-cli
+   ```
+   and 
+   ```
+   journalctl -xeu signal-cli.service
+   ```
 
 ## Register for a new account 
 **Request registration for mobile number**
@@ -33,8 +78,8 @@ This will send a verification code via SMS
 signal-cli -u YOUR_NUMBER verify VERIFICATIONCODE
 ```
 
-It might bee that the register step requires you to solve a captcha. 
-In this case you will be prompted to got open a link in the browser, solve the captcha, copy the result of the captcha from the failed redirect message in the browsers development console. 
+It might be that the register step requires you to solve a captcha. 
+In this case you will be prompted to got open a link in the browser, solve the captcha, copy the result of the captcha from the failed redirect message in the browsers development console. (To the time this how-to was written the link was `https://signalcaptchas.org/staging/challenge/generate.html` )
 Once the captcha is solved you can copy the result string and repeat the register command with the --captcha option
 ```
 signal-cli -u YOUR_NUMBER register --captcha CAPTCHA_STRING
@@ -148,7 +193,13 @@ If you want to add a contact either
     - validate them (checks if they are existing at Signal), 
     - write them to your local contact store at `~/.local/share/signal-cli/data/YOUR_NUMBER.d/recipients-store`,
     - remove the new contacts from the config at `~/.local/share/signal-cli/data/YOUR_NUMBER`
-4. Check if new contacts are existing in you desktop app and your local recipient store
+4. Check your new contacts with:
+    - Checking your desktop app 
+    - Checking your local recipient store at `~/.local/share/signal-cli/data/YOUR_NUMBER.d/recipients-store`
+    - Using the `listContacts` command 
+      ```
+      signal-cli -u YOUR_NUMBER listContacts
+      ```
 
 ### Troubleshooting
 Let's assume you have a typo in a telephone-number while adding a new contact OR you try to add a contact which is not yet registered to Signal. 
