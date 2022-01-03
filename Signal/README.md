@@ -149,3 +149,22 @@ If you want to add a contact either
     - write them to your local contact store at `~/.local/share/signal-cli/data/YOUR_NUMBER.d/recipients-store`,
     - remove the new contacts from the config at `~/.local/share/signal-cli/data/YOUR_NUMBER`
 4. Check if new contacts are existing in you desktop app and your local recipient store
+
+### Troubleshooting
+Let's assume you have a typo in a telephone-number while adding a new contact OR you try to add a contact which is not yet registered to Signal. 
+In this case the `sendContacts` command will fail with the following error : 
+```
+signal-cli -u YOUR_NUMBER sendContacts
+WARN ManagerImpl - Failed to get uuid for e164 number: +491234567890
+java.io.IOException: +491234567890
+	at org.asamk.signal.manager.ManagerImpl.getRegisteredUser(ManagerImpl.java:915)
+	at org.asamk.signal.manager.ManagerImpl.resolveSignalServiceAddress(ManagerImpl.java:1444)
+	at org.asamk.signal.manager.helper.SyncHelper.sendContacts(SyncHelper.java:132)
+	at org.asamk.signal.manager.ManagerImpl.sendContacts(ManagerImpl.java:1277)
+	at org.asamk.signal.commands.SendContactsCommand.handleCommand(SendContactsCommand.java:30)
+	at org.asamk.signal.App.handleLocalCommand(App.java:252)
+	at org.asamk.signal.App.init(App.java:202)
+	at org.asamk.signal.Main.main(Main.java:53)
+```
+
+This is because signal is not able to find any user with the number `+491234567890`
