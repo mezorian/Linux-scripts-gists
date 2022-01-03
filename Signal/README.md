@@ -46,7 +46,7 @@ Follow the instructions at https://signal.org/download/ to install the signal de
 
 ## Add Signal Desktop Client as a new device
 If you open the Signal Desktop Client, it will ask you to connect the client to your 'master' installation, in this case to the signal cli. 
-![link broken](images/add_device.png)
+![link broken](add_device.png)
 
 Usually in this step you need to scan the QR-code with your mobile-phones camera. 
 In the case of signal cli we have to take a screenshot of the QR code and read the QR code with:
@@ -133,10 +133,10 @@ If you want to add a contact either
 	```
 
 	Before adding the contacts it might look somehow like this:
-	![link broken](images/signal_data_file_before.png)
+	![link broken](signal_data_file_before.png)
 
 	After adding the contacts it should look somehow like this:
-	![link broken](images/signal_data_file_after.png)
+	![link broken](signal_data_file_after.png)
 
 3. Syncronize contacts of your local configs with all other devices with 
    ```
@@ -168,3 +168,8 @@ java.io.IOException: +491234567890
 ```
 
 This is because signal is not able to find any user with the number `+491234567890`
+Unfortunately until now the signal-cli is not able to recover from this problem on its own. 
+This is due to the fact that the cli still added a new entry to the receipient store. But as it is not able to get any uuid for this not known number it added a new entry with uuid `null` to the receipient store. And once there is such a entry inside the reciepient store the cli refuses to add more contacts. 
+
+To fix this you can simply manually edit the recipient store at `~/.local/share/signal-cli/data/YOUR_NUMBER.d/recipients-store` and remove the mal-formed entry :
+![link broken](corrupted_recipients_store.png)
