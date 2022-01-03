@@ -1,4 +1,14 @@
-# How to use Signal without Smartphone
+# How to use Signal without a Smartphone
+
+The Signal messenger is an end-to-end encrypted messenger which can be used on mobile apps for android and ios and also in desktop apps for Linux, Mac and Windows. 
+Unfortunately Signal is very focused on Smartphones and some Features like registration, adding contacts and change profile properties are limited to the mobile apps and don't work with the desktop applications. 
+If you want to use Signal even though you have no smartphone you have to find a way to still do these things that are not possible in the desktop apps. 
+One way would be to install a virtual android somewhere and do things like registration in your virtual android app. 
+Unfortunately this also has a lot of pitfalls. For example it is not so easy to let your virtual android app use your computers camera to verify QR codes. 
+Also you have to keep in mind that Signal expects the user to use every activated device from time to time. If this is not done the rarely used device is removed for security reasons. This would also mean that you have to use your virtual android app regularly. 
+
+To get around all this pain the project https://github.com/AsamK/signal-cli provides us with a nice command line tool. 
+This dbus based cli can interact with the Signal servers to perform features like registration (and others) even without an android device.
 
 ## Installation of Signal Commandline Interface 
 
