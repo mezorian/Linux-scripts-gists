@@ -1,7 +1,9 @@
 # Linux Cheat Sheet
 
 ## Search a string in files found with find command
-`grep 'LinuxSlave' $(find jobs/* -name "config.xml")`
+```
+grep 'LinuxSlave' $(find jobs/* -name "config.xml")
+```
 
 ## git file history
 https://github.com/pomber/git-history/tree/master/cli
@@ -33,10 +35,14 @@ apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests \
 ```
 
 # go back to previous directory
+```
 cd -
+```
 
 # rsync (don't backup files from /proc /media /....
+```
 rsync --one-file-system (https://unix.stackexchange.com/a/107230)
+```
 
 # console output
 ## table formatted output 
@@ -48,5 +54,7 @@ sudo apt list --installed | column -t
 
 # QR Codes 
 # Scan QR code from command line:
+```
 zbarimg /tmp/qr.png
+```
 
