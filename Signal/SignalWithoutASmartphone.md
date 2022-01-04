@@ -30,7 +30,7 @@ wget https://github.com/AsamK/signal-cli/releases/download/v0.10.0/signal-cli-0.
 # unpack it to /usr/local/bin
 sudo tar -xvzf signal-cli-0.10.0.tar.gz --directory=/usr/local/bin/
 
-# linkf from /usr/local/bin to /usr/bin
+# link from /usr/local/bin to /usr/bin
 sudo ln -s /usr/local/bin/signal-cli-0.10.0/bin/signal-cli /usr/bin/signal-cli
 ```
 
