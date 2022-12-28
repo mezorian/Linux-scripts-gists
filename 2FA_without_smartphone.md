@@ -5,3 +5,6 @@ To generate a totp (Time-based One-Time Password) you simply have to run the bel
 ```
 oathtool -b --totp 'PASTE_YOUR_DATA_HERE'
 ```
+
+As a result you will a 6 digit one time password. 
+For every new interaction you have to re-run this command and you will get a new one time password.
